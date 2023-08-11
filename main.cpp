@@ -28,12 +28,12 @@ template<class T> using min_heap = priority_queue<T,vector<T>,greater<T>>;
 #define ALL(a) begin(a),end(a)
 #define RALL(a) a.rbegin(),a.rend()
 // # Fast IO and IO Settings
-struct IO_Setting{IO_Setting(){cin.tie(nullptr);ios_base::sync_with_stdio(false);cout<<fixed<<setprecision(15);cerr<<fixed<<setprecision(3);}}io_setting;
+struct IO_Setting{IO_Setting(){cin.tie(nullptr);cerr<<fixed<<setprecision(3);}}io_setting;
 // # Input Overloads
-template<class T,class U> istream& operator>>(istream& is,P<T,U>&p){return is>>p.first>>p.second;}
+template<class T,class U> istream& operator>>(istream& is,P<T,U>&t){return is>>t.first>>t.second;}
 template<class T> istream& operator>>(istream& is,V<T>&v){for(T& e:v) is>>e; return is;}
 // # Output Overloads
-template<class T,class U> ostream& operator<<(ostream& os,const P<T,U>& p){return os<<p.first<<' '<<p.second;}
+template<class T,class U> ostream& operator<<(ostream& os,const P<T,U>& t){return os<<t.first<<' '<<t.second;}
 template<class T> ostream& operator<<(ostream& os,const V<T>& v) {int ss=v.size(); rep(ii,ss) {os<<v[ii]<<(ii+1==ss?"":" ");} return os;}
 // # Function Definition
 template<class T, class U> inline bool chmin(T &a, U b) { if(a>b) {a=b; return 1;} return 0;}
@@ -52,8 +52,8 @@ constexpr char ENDL = '\n';
 constexpr ll INF = (1LL<<30)-1; // 問題毎にfit
 constexpr ll INFLL = (1LL<<62)-1; // 問題毎にfit
 const ld PI = acos(static_cast<long double>(-1));
-constexpr int dy[]={0, 1, 0, -1};
-constexpr int dx[]={1, 0, -1, 0};
+// constexpr int dy[]={0, 1, 0, -1};
+// constexpr int dx[]={1, 0, -1, 0};
 // constexpr int dy[]={0, 1, 1, 1, 0, -1, -1, -1};
 // constexpr int dx[]={1, 1, 0, -1, -1, -1, 0, 1};
 // # Debug Macro
@@ -123,8 +123,108 @@ public:
     }
 } RAND;
 
+
+struct Point;
+
+namespace Const {
+    int L;
+    int N;
+    int S;
+    V<Point> Hole;
+
+    void init() {
+        cin >> L >> N >> S;
+        Hole.resize(N);
+        cin >> Hole;
+    }
+}
+using Const::L, Const::N, Const::S, Const::Hole;
+
+struct Point {
+    int x, y;
+    Point() = default;
+    Point(int x, int y) : x(x), y(y) {}
+    Point moved(int dx, int dy) {
+        return Point((x + dx) % L, (y + dy) % L);
+    }
+    friend istream& operator>>(istream& is, Point& t) {
+        return is >> t.x >> t.y;
+    }
+};
+
+struct Temperature {
+    using value_type = long long;
+    V<V<value_type>> t;
+    Temperature() : t(Const::N, V<value_type>(Const::N)) {}
+
+    V<value_type>& operator[](int i) {return t[i];}
+    value_type& athole(int i) {return t[Hole[i].x][Hole[i].y];}
+    /// @brief print to stdout
+    void set() {
+        // set() must be called only once.
+        static bool called = false;
+        assert(!called);
+        called = true;
+
+        rep(i, Const::L) {
+            rep(j, Const::L) {
+                cout << t[i][j] << ' ';
+            }
+            cout << '\n';
+        }
+        cout << flush;
+    }
+};
+
+using Measurement = Temperature::value_type;
+
+struct Query {
+    int i, x, y;
+    Query(int i, int x, int y) : i(i), x(x), y(y) {}
+    Measurement ask() {
+        cout << i << ' ' << x << ' ' << y << endl;
+        Measurement res;
+        cin >> res;
+        if(res == -1) {
+            fprintf(stderr, "Invalid value given at measurement input at (i, x, y) = (%d, %d, %d)", i, x, y);
+            exit(EXIT_FAILURE);
+        }
+
+        return res;
+    }
+};
+
+
 struct Solver {
-} solver;
+    Solver() { Const::init(); }
+    void solve() {
+        // Generate Temperature
+        Temperature t;
+        rep(i, N) {
+            t.athole(i) = (1000 / N) * i;
+        }
+        t.set();
+
+        // Ask Queries and Estimate
+        V<int> estimate(N);
+        rep(i, N) {
+            Query q((int)i, 0, 0);
+            Measurement m = q.ask();
+
+            int diffmn = INF;
+            rep(j, N) {
+                if(chmin(diffmn, abs(t.athole(j) - m))) estimate[i] = j;
+            }
+        }
+
+        // Output estimate
+        cout << "-1 -1 -1\n";
+        for(auto e : estimate) cout << e << '\n';
+        cout << flush;
+    }
+};
 
 int main() {
+    Solver solver;
+    solver.solve();
 }
