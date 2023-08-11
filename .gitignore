@@ -1,13 +1,27 @@
 # rust
-src/**
+src/
+target/
 Cargo.lock
 Cargo.toml
+
 # docs
 README_ja.html
 README_en.html
+
 # testcase
-in/**
+in/
+out/
 seeds.txt
+
+# exec file
+main
+
+# misc log
+err/
+log.txt
+
+# visualizer html
+vis.html
 
 # .DS_Store
 .DS_Store
