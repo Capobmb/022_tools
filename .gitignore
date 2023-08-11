@@ -1,0 +1,13 @@
+# rust
+src/**
+Cargo.lock
+Cargo.toml
+# docs
+README_ja.html
+README_en.html
+# testcase
+in/**
+seeds.txt
+
+# .DS_Store
+.DS_Store
