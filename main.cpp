@@ -208,12 +208,17 @@ struct Solver {
         // Ask Queries and Estimate
         V<int> estimate(N);
         rep(i, N) {
-            Query q((int)i, 0, 0);
-            Measurement m = q.ask();
+            int sz = 100;
+            V<int> measures(sz);
+            rep(nt, sz) {
+                Query q((int)i, 0, 0);
+                measures[nt] = q.ask();
+            }
+            double mean = reduce(ALL(measures)) / (double)sz;
 
-            int diffmn = INF;
+            double diffmn = INF;
             rep(j, N) {
-                if(chmin(diffmn, abs(t.athole(j) - m))) estimate[i] = j;
+                if(chmin(diffmn, abs(t.athole(j) - mean))) estimate[i] = j;
             }
         }
 
