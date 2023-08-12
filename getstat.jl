@@ -17,6 +17,7 @@ function main()
 
     Scores = map(x -> x[2], Stats)
     println("Testcase number = $(length(Scores))")
+    println("Sum = $(sum(Scores))")
     println("Mean = $(mean(Scores))")
     println("Median = $(median(Scores))")
     println("Min = $(minimum(Scores))")
