@@ -336,6 +336,10 @@ struct Solver {
         rep(i, N) {
             t.athole(i) = (1000 / N) * i;
         }
+
+        // 穴以外をsmoothen
+        t = t.smoothed();
+
         t.set();
 
         // Ask Queries and Estimate
