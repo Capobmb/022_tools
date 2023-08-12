@@ -199,8 +199,18 @@ namespace Const {
         Hole.resize(N);
         cin >> Hole;
     }
+    template<typename T>
+    void safe_inc_index(T& x) {
+        if(x < L - 1) ++x;
+        else x = 0;
+    }
+
+    template<typename T>
+    T safe_inced_index(T x) {
+        return (x < L - 1 ? x + 1 : T(0));
+    }
 }
-using Const::L, Const::N, Const::S, Const::Hole;
+using Const::L, Const::N, Const::S, Const::Hole, Const::safe_inc_index, Const::safe_inced_index;
 
 struct Point {
     int x, y;
@@ -216,20 +226,81 @@ struct Point {
 
 struct Temperature {
     using value_type = long long;
+    static constexpr value_type unsettled = -1;
+
     V<V<value_type>> t;
-    Temperature() : t(Const::N, V<value_type>(Const::N)) {}
+    Temperature() : t(L, V<value_type>(L, unsettled)) {}
 
     V<value_type>& operator[](int i) {return t[i];}
     value_type& athole(int i) {return t[Hole[i].x][Hole[i].y];}
-    /// @brief print to stdout
+
+    /// @brief 2次元線形補間 
+    Temperature smoothed() {
+        Temperature res(*this);
+
+        auto interpolate_x_direction = [&](V<V<value_type>>& v){
+            rep(i, L) {
+                auto& temp = v[i];
+                // 全部unsettled ならやらない
+                if(all_of(ALL(temp), [](auto x){return x == unsettled;})) {
+                    continue;
+                }
+
+                V<int> checked(L);
+                // [l, 次の settled) を補間
+                for (int l = std::find_if_not(
+                                 ALL(temp), [](auto x) { return x == unsettled; }) -
+                             temp.begin(),
+                         r = safe_inced_index(l);;) {
+                    if(checked[l]) break;
+
+                    while(temp[r] == unsettled) safe_inc_index(r);
+
+                    int tl = l, tr = (r <= l ? r + L : r);
+                    assert(tl < tr);
+                    double coeff = (temp[r] - temp[l]) / (double)(tr - tl);
+
+                    for(int tk = tl; tk < tr; tk++) {
+                        int k = (tk >= L ? tk - L : tk);
+                        temp[k] = round(temp[l] + coeff * (tk - tl));
+                        checked[k] = true;
+                    }
+
+                    l = r;
+                    r = safe_inced_index(l);
+                }
+            }
+        };
+
+        // x軸方向とy軸方向両方やる
+        interpolate_x_direction(res.t);
+        res.t = clockwise_rotated(res.t);
+        interpolate_x_direction(res.t);
+        res.t = counterclockwise_rotated(res.t);
+        res.resolve_unsettled();
+
+        return res;
+    }
+
+    void resolve_unsettled() {
+        for_each(ALL(t), [](V<value_type>& v) {
+            for_each(ALL(v), [](value_type& x) {
+                if(x == unsettled) x = 0;
+            });
+        });
+    }
+
+    /// @brief settle all the temperature and print to stdout
     void set() {
         // set() must be called only once.
         static bool called = false;
         assert(!called);
         called = true;
 
-        rep(i, Const::L) {
-            rep(j, Const::L) {
+        resolve_unsettled();
+
+        rep(i, L) {
+            rep(j, L) {
                 cout << t[i][j] << ' ';
             }
             cout << '\n';
