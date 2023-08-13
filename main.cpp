@@ -333,8 +333,9 @@ struct Solver {
     void solve() {
         // Generate Temperature
         Temperature t;
-        rep(i, N) {
-            t.athole(i) = (1000 / N) * i;
+        for(int itr = 0; itr < N; itr++) {
+            int i = (itr & 1 ? N - itr / 2 - 1 : itr / 2);
+            t.athole(i) = (1000 / N) * itr;
         }
 
         // 穴以外をsmoothen
