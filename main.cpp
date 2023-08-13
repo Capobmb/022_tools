@@ -192,6 +192,7 @@ namespace Const {
     int L;
     int N;
     int S;
+    constexpr int MeasurementMax = 10000;
     V<Point> Hole;
 
     void init() {
@@ -210,7 +211,7 @@ namespace Const {
         return (x < L - 1 ? x + 1 : T(0));
     }
 }
-using Const::L, Const::N, Const::S, Const::Hole, Const::safe_inc_index, Const::safe_inced_index;
+using Const::L, Const::N, Const::S, Const::Hole, Const::safe_inc_index, Const::safe_inced_index, Const::MeasurementMax;
 
 struct Point {
     int x, y;
@@ -346,7 +347,7 @@ struct Solver {
         // Ask Queries and Estimate
         V<int> estimate(N);
         rep(i, N) {
-            int n_measure = 100;
+            int n_measure = min(pow(N * S / (double)250, 2) + 1, MeasurementMax / N);
             V<int> measures(n_measure);
             rep(nt, n_measure) {
                 Query q((int)i, 0, 0);
