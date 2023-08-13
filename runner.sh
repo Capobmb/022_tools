@@ -8,5 +8,3 @@ for file in $(ls -1 ./in/*.txt); do
 done
 
 echo All the testcase processed.
-
-julia getstat.jl

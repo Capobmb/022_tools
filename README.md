@@ -1,18 +1,24 @@
 まず Command + Shift + B でコンパイルする
 
 # 1つのテストケース実行
-```
+```zsh
 cargo run --release --bin tester ./main < ./in/0000.txt > ./out/0000.txt 2> ./err/0000.txt
 ```
 
 - その後visualizer見たい場合（使い方ようワカランからウェブ版使うだろうと思う）：
-```
+```zsh
 cargo run --release --bin vis ./in/0000.txt ./out/0000.txt
 ```
 
 # 全テストケース実行
 ```
 source runner.sh
+```
+
+# Stat の計算
+julia REPL を起動し、
+```julia
+using Pkg; Pkg.activate("."); include("getstat.jl")
 ```
 
 # テストケースの生成
