@@ -346,13 +346,13 @@ struct Solver {
         // Ask Queries and Estimate
         V<int> estimate(N);
         rep(i, N) {
-            int sz = 100;
-            V<int> measures(sz);
-            rep(nt, sz) {
+            int n_measure = 100;
+            V<int> measures(n_measure);
+            rep(nt, n_measure) {
                 Query q((int)i, 0, 0);
                 measures[nt] = q.ask();
             }
-            double mean = reduce(ALL(measures)) / (double)sz;
+            double mean = reduce(ALL(measures)) / (double)n_measure;
 
             double diffmn = INF;
             rep(j, N) {
