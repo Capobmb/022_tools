@@ -1,8 +1,10 @@
 # rust
 src/
 target/
-Cargo.lock
-Cargo.toml
+
+# Rust/Julia
+**.lock
+**.toml
 
 # docs
 README_ja.html
