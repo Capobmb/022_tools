@@ -334,13 +334,14 @@ struct Solver {
     void solve() {
         // Generate Temperature
         Temperature t;
-        for(int itr = 0; itr < N; itr++) {
-            int i = (itr & 1 ? N - itr / 2 - 1 : itr / 2);
-            t.athole(i) = (1000 / N) * itr;
+        const double i_width = 1000 / (double)((L + 1) / 2);
+        const double j_width = i_width / (double)((L + 1) / 2);
+        rep(i, L) {
+            double base = i_width * (i < L / 2 ? i : L - i - 1);
+            rep(j, L) {
+                t[i][j] = round(base + j_width * (j < L / 2 ? j : L - j - 1));
+            }
         }
-
-        // 穴以外をsmoothen
-        t = t.smoothed();
 
         t.set();
 
