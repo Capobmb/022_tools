@@ -12,8 +12,11 @@ README_en.html
 
 # testcase
 in/
-out/
 seeds.txt
+
+# output, error log
+out*
+err*
 
 # exec file
 main
