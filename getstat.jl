@@ -17,7 +17,7 @@ function main()
                 end
             end
         end
-        if length(cols) == 1
+        if length(cols) == 5
             println(stderr, "Some metrics was not calculated on errlog $file.")
         else
             push!(df, cols)
