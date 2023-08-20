@@ -27,3 +27,6 @@ vis.html
 
 # .DS_Store
 .DS_Store
+
+# vscode
+.vscode
