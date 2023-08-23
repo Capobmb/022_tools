@@ -346,18 +346,53 @@ struct Solver {
 
         // Ask Queries and Estimate
         V<int> estimate(N);
-        rep(i, N) {
-            int n_measure = min(pow(N * S / (double)250, 2) + 1, MeasurementMax / N);
-            V<int> measures(n_measure);
-            rep(nt, n_measure) {
-                Query q((int)i, 0, 0);
-                measures[nt] = q.ask();
-            }
-            double mean = reduce(ALL(measures)) / (double)n_measure;
 
-            double diffmn = INF;
-            rep(j, N) {
-                if(chmin(diffmn, abs(t.athole(j) - mean))) estimate[i] = j;
+        if(S < 200) {
+            rep(i, N) {
+                // 一点での計測に使える最大回数の算出
+                const int n_measure = min(pow(N * S / (double)250, 2) + 1, (MeasurementMax / 3) / N);
+
+                auto obtain_mean_at = [&](int which, int dx, int dy) {
+                    V<int> measures(n_measure);
+                    rep(nt, n_measure) {
+                        Query q(which, dx, dy);
+                        measures[nt] = q.ask();
+                    }
+                    return reduce(ALL(measures)) / (double)n_measure;
+                };
+
+                // Hole i での計測値
+                const double at_hole = obtain_mean_at(i, 0, 0);
+
+                // 上下での計測値
+                const double at_upper = obtain_mean_at(i, - L / 4, 0);
+                const double at_lower = obtain_mean_at(i,   L / 4, 0);
+
+                const bool is_upper = at_upper < at_lower;
+
+                double diffmn = INF;
+                rep(j, N) {
+                    const bool j_is_upper = Hole[j].x <= (L / 2);
+                    if( j_is_upper == is_upper &&
+                        chmin(diffmn, abs(t.athole(j) - at_hole))) estimate[i] = j;
+                }
+            }
+        }
+
+        else {
+                rep(i, N) {
+                int n_measure = min(pow(N * S / (double)250, 2) + 1, MeasurementMax / N);
+                V<int> measures(n_measure);
+                rep(nt, n_measure) {
+                    Query q((int)i, 0, 0);
+                    measures[nt] = q.ask();
+                }
+                double mean = reduce(ALL(measures)) / (double)n_measure;
+
+                double diffmn = INF;
+                rep(j, N) {
+                    if(chmin(diffmn, abs(t.athole(j) - mean))) estimate[i] = j;
+                }
             }
         }
 
